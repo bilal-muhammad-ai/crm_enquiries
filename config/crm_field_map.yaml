@@ -1,0 +1,35 @@
+# SuiteCRM Enquiries module field mapping — swap keys when live vardefs are confirmed
+module: GF_Enquiries
+
+fields:
+  name: name
+  email: email1
+  phone: phone_work
+  enquiry_type: enquiry_type_c
+  message: description
+  company: account_name
+  status: status
+  priority: priority
+  classification_tags: classification_tags
+  internal_summary: internal_summary
+  fathom_recording_id: fathom_recording_id
+  meeting_scheduled_at: meeting_scheduled_at
+
+enquiry_type_values:
+  superyacht: "Superyacht Outfitting"
+  residential: "Residential Project"
+  aircraft: "Private Aircraft"
+  general: "General Enquiry"
+
+status_values:
+  new: "New"
+  classified: "Classified"
+  draft_pending: "Draft Pending"
+  responded: "Responded"
+  brief_taken: "Brief Taken"
+  closed: "Closed"
+
+related_modules:
+  contacts: Contacts
+  accounts: Accounts
+  meetings: Meetings
