@@ -1,5 +1,8 @@
 """Analysis crew — classify and enrich enquiries."""
 
+import logging
+
+from crm_enquiries.crews import compat  # noqa: F401
 from crewai import Crew, Process
 from crewai.project import CrewBase, agent, crew, task
 
@@ -16,6 +19,8 @@ from crm_enquiries.crews.analysis.tasks import (
     summarize_enquiry_task,
 )
 from crm_enquiries.schemas.analysis import EnquiryAnalysis
+
+logger = logging.getLogger(__name__)
 
 
 @CrewBase
@@ -56,7 +61,7 @@ class AnalysisCrew:
         )
 
 
-def run_analysis(inputs: dict, use_llm: bool = True) -> EnquiryAnalysis:
+async def run_analysis(inputs: dict, use_llm: bool = True) -> EnquiryAnalysis:
     enquiry_type = inputs.get("enquiry_type", "general")
     message = inputs.get("message", "")
 
@@ -64,8 +69,9 @@ def run_analysis(inputs: dict, use_llm: bool = True) -> EnquiryAnalysis:
         return rule_based_analysis(enquiry_type, message)
 
     try:
-        result = AnalysisCrew().crew().kickoff(inputs=inputs)
+        result = await AnalysisCrew().crew().kickoff_async(inputs=inputs)
         raw = str(result.raw if hasattr(result, "raw") else result)
         return parse_analysis_output(raw, enquiry_type)
-    except Exception:
+    except Exception as exc:
+        logger.warning("AnalysisCrew failed, using rule-based analysis: %s", exc)
         return rule_based_analysis(enquiry_type, message)

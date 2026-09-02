@@ -55,7 +55,7 @@ class EnquiryOrchestrator:
 
         history = await self.memory.get_history_summary(enquiry.id)
         use_llm = bool(self.settings.groq_api_key or self.settings.openai_api_key)
-        analysis = run_analysis(
+        analysis = await run_analysis(
             {
                 "name": intake.name,
                 "email": str(intake.email),
@@ -71,7 +71,7 @@ class EnquiryOrchestrator:
         await self.crm.update_from_analysis(crm_id, analysis)
         await self.memory.append(enquiry.id, "classified", analysis.model_dump())
 
-        draft = run_response_crew(
+        draft = await run_response_crew(
             {
                 "name": intake.name,
                 "email": str(intake.email),
@@ -150,7 +150,7 @@ class EnquiryOrchestrator:
 
         if approval.action == "revise":
             use_llm = bool(self.settings.groq_api_key or self.settings.openai_api_key)
-            revised = run_response_crew(
+            revised = await run_response_crew(
                 {
                     "name": enquiry.name,
                     "email": enquiry.email,

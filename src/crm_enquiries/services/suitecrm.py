@@ -25,7 +25,7 @@ class SuiteCRMService:
 
     @property
     def module(self) -> str:
-        return self.field_map.get("module", "GF_Enquiries")
+        return self.field_map.get("module", "Leads")
 
     def _crm_field(self, key: str) -> str:
         return self.field_map.get("fields", {}).get(key, key)
@@ -56,6 +56,7 @@ class SuiteCRMService:
             return {}
         token = await self._get_token()
         async with httpx.AsyncClient() as client:
+            logger.info("Requesting %s %s with token %s", method, path, token)
             resp = await client.request(
                 method,
                 f"{self.settings.suitecrm_base_url}{path}",
@@ -95,14 +96,14 @@ class SuiteCRMService:
             logger.info("Mock CRM enquiry created: %s", crm_id)
             return crm_id
 
-        contact_id = await self._find_or_create_contact(first, last, str(intake.email), intake.phone)
+        #contact_id = await self._find_or_create_contact(first, last, str(intake.email), intake.phone)
         data: dict[str, Any] = {"data": {"type": self.module, "attributes": payload}}
-        if contact_id:
-            data["data"]["attributes"]["contact_id"] = contact_id
-        if intake.company:
-            account_id = await self._find_or_create_account(intake.company)
-            if account_id:
-                data["data"]["attributes"]["account_id"] = account_id
+        #if contact_id:
+        #    data["data"]["attributes"]["contact_id"] = contact_id
+        #if intake.company:
+        #    account_id = await self._find_or_create_account(intake.company)
+        #    if account_id:
+        #        data["data"]["attributes"]["account_id"] = account_id
         logger.info("Creating CRM enquiry: %s", data)
         result = await self._request("POST", f"/Api/V8/module", json=data)
         return result.get("data", {}).get("id", str(uuid.uuid4()))
@@ -165,9 +166,9 @@ class SuiteCRMService:
 
     async def update_from_analysis(self, crm_id: str, analysis: EnquiryAnalysis) -> None:
         updates = {
-            self._crm_field("priority"): analysis.priority,
-            self._crm_field("classification_tags"): ",".join(analysis.intent_tags),
-            self._crm_field("internal_summary"): analysis.internal_summary,
+            #self._crm_field("priority"): analysis.priority,
+            #self._crm_field("classification_tags"): ",".join(analysis.intent_tags),
+            #self._crm_field("internal_summary"): analysis.internal_summary,
             self._crm_field("status"): self.field_map.get("status_values", {}).get("classified", "Classified"),
             **analysis.crm_field_updates,
         }
@@ -251,8 +252,9 @@ class SuiteCRMService:
                 self._mock_records[crm_id].update(attributes)
             logger.info("Mock CRM update %s: %s", crm_id, attributes)
             return
+        logger.info("Updating CRM record %s: %s", crm_id, attributes)
         await self._request(
             "PATCH",
-            f"/Api/V8/module/{self.module}/{crm_id}",
+            "/Api/V8/module",
             json={"data": {"type": self.module, "id": crm_id, "attributes": attributes}},
         )

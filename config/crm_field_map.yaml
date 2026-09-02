@@ -1,17 +1,19 @@
-# SuiteCRM Enquiries module field mapping — swap keys when live vardefs are confirmed
-module: GF_Enquiries
+# SuiteCRM field mapping — swap keys when live vardefs are confirmed.
+# Leads module: priority, classification_tags, and internal_summary require custom vardefs
+# (or remap them below to existing Lead fields).
+module: Leads
 
 fields:
-  name: name
+  name: pr_name
   email: email1
   phone: phone_work
-  enquiry_type: enquiry_type_c
+  enquiry_type: client_type
   message: description
   company: account_name
   status: status
-  priority: priority
-  classification_tags: classification_tags
-  internal_summary: internal_summary
+  priority: refered_by
+  classification_tags: quotation_type
+  internal_summary: pr_activity_description
   fathom_recording_id: fathom_recording_id
   meeting_scheduled_at: meeting_scheduled_at
 

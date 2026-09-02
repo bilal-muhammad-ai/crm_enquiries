@@ -1,5 +1,8 @@
 """Meeting analysis crew — transcript to CRM updates."""
 
+import logging
+
+from crm_enquiries.crews import compat  # noqa: F401
 from crewai import Crew, Process
 from crewai.project import CrewBase, agent, crew, task
 
@@ -16,6 +19,8 @@ from crm_enquiries.crews.meeting.tasks import (
     rule_based_meeting_analysis,
 )
 from crm_enquiries.schemas.meeting import MeetingAnalysis
+
+logger = logging.getLogger(__name__)
 
 
 @CrewBase
@@ -56,7 +61,7 @@ class MeetingAnalysisCrew:
         )
 
 
-def run_meeting_analysis(inputs: dict, use_llm: bool = True) -> MeetingAnalysis:
+async def run_meeting_analysis(inputs: dict, use_llm: bool = True) -> MeetingAnalysis:
     summary = inputs.get("summary", "")
     transcript = inputs.get("transcript", "")
 
@@ -64,8 +69,9 @@ def run_meeting_analysis(inputs: dict, use_llm: bool = True) -> MeetingAnalysis:
         return rule_based_meeting_analysis(summary, transcript)
 
     try:
-        result = MeetingAnalysisCrew().crew().kickoff(inputs=inputs)
+        result = await MeetingAnalysisCrew().crew().kickoff_async(inputs=inputs)
         raw = str(result.raw if hasattr(result, "raw") else result)
         return parse_meeting_analysis(raw, summary, transcript)
-    except Exception:
+    except Exception as exc:
+        logger.warning("MeetingAnalysisCrew failed, using rule-based analysis: %s", exc)
         return rule_based_meeting_analysis(summary, transcript)

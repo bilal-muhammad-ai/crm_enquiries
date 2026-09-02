@@ -26,30 +26,38 @@ def test_parse_analysis_output_json():
 
 
 def test_run_analysis_without_llm():
-    result = run_analysis(
-        {
-            "name": "Test User",
-            "email": "test@example.com",
-            "company": "Test Co",
-            "enquiry_type": "residential",
-            "message": "Looking for bespoke linens",
-        },
-        use_llm=False,
+    import asyncio
+
+    result = asyncio.run(
+        run_analysis(
+            {
+                "name": "Test User",
+                "email": "test@example.com",
+                "company": "Test Co",
+                "enquiry_type": "residential",
+                "message": "Looking for bespoke linens",
+            },
+            use_llm=False,
+        )
     )
     assert result.enquiry_type.value == "residential"
 
 
 def test_run_response_crew_without_llm():
-    draft = run_response_crew(
-        {
-            "name": "Test User",
-            "email": "test@example.com",
-            "enquiry_type": "general",
-            "message": "General enquiry about services",
-            "internal_summary": "General enquiry",
-            "intent_tags": [],
-        },
-        use_llm=False,
+    import asyncio
+
+    draft = asyncio.run(
+        run_response_crew(
+            {
+                "name": "Test User",
+                "email": "test@example.com",
+                "enquiry_type": "general",
+                "message": "General enquiry about services",
+                "internal_summary": "General enquiry",
+                "intent_tags": [],
+            },
+            use_llm=False,
+        )
     )
     assert isinstance(draft, EmailDraft)
     assert draft.validation_passed
@@ -57,12 +65,16 @@ def test_run_response_crew_without_llm():
 
 
 def test_run_meeting_analysis_without_llm():
-    analysis = run_meeting_analysis(
-        {
-            "summary": "Client needs superyacht tableware. NDA discussed.",
-            "transcript": "Client: We need tableware. GF: We can send NDA.",
-        },
-        use_llm=False,
+    import asyncio
+
+    analysis = asyncio.run(
+        run_meeting_analysis(
+            {
+                "summary": "Client needs superyacht tableware. NDA discussed.",
+                "transcript": "Client: We need tableware. GF: We can send NDA.",
+            },
+            use_llm=False,
+        )
     )
     assert isinstance(analysis, MeetingAnalysis)
     assert analysis.crm_status == "Brief Taken"

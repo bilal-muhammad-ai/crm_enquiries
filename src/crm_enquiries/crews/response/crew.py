@@ -1,5 +1,8 @@
 """Response crew — KB-grounded email drafting."""
 
+import logging
+
+from crm_enquiries.crews import compat  # noqa: F401
 from crewai import Crew, Process
 from crewai.project import CrewBase, agent, crew, task
 
@@ -17,6 +20,8 @@ from crm_enquiries.crews.response.tasks import (
 )
 from crm_enquiries.schemas.email_draft import EmailDraft
 from crm_enquiries.services.knowledge_base import KnowledgeBaseService
+
+logger = logging.getLogger(__name__)
 
 
 @CrewBase
@@ -57,7 +62,7 @@ class ResponseCrew:
         )
 
 
-def run_response_crew(inputs: dict, use_llm: bool = True) -> EmailDraft:
+async def run_response_crew(inputs: dict, use_llm: bool = True) -> EmailDraft:
     kb = KnowledgeBaseService()
     inputs = {
         **inputs,
@@ -72,8 +77,9 @@ def run_response_crew(inputs: dict, use_llm: bool = True) -> EmailDraft:
         return rule_based_draft(inputs)
 
     try:
-        result = ResponseCrew().crew().kickoff(inputs=inputs)
+        result = await ResponseCrew().crew().kickoff_async(inputs=inputs)
         raw = str(result.raw if hasattr(result, "raw") else result)
         return parse_email_draft(raw, inputs)
-    except Exception:
+    except Exception as exc:
+        logger.warning("ResponseCrew failed, using rule-based draft: %s", exc)
         return rule_based_draft(inputs)

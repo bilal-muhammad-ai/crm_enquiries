@@ -15,6 +15,8 @@ _data_dir.mkdir(parents=True, exist_ok=True)
 os.environ.setdefault("XDG_DATA_HOME", str(_data_dir))
 os.environ.setdefault("CREWAI_STORAGE_DIR", "crm_enquiries")
 
+from crm_enquiries.crews import compat  # noqa: F401 — Groq/LiteLLM compatibility patch
+
 from crm_enquiries.api.approval import router as approval_router
 from crm_enquiries.api.enquiries import router as enquiries_router
 from crm_enquiries.api.webhooks import router as webhooks_router
@@ -45,7 +47,7 @@ app = FastAPI(
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
-    # allow_credentials=True,
+    allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
@@ -61,12 +63,17 @@ async def health() -> dict:
 
 
 def run() -> None:
+    import sys
+
     settings = get_settings()
+    # Uvicorn --reload spawns a child worker; breakpoints in route handlers only
+    # hit when the debugger is attached to that worker, not the reloader parent.
+    use_reload = settings.is_development and "debugpy" not in sys.modules
     uvicorn.run(
         "crm_enquiries.main:app",
         host="0.0.0.0",
         port=8000,
-        reload=settings.is_development,
+        reload=use_reload,
     )
 
 

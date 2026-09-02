@@ -53,7 +53,7 @@ class MeetingFollowUpOrchestrator:
 
         history = await self.memory.get_history_summary(enquiry.id)
         use_llm = bool(self.settings.groq_api_key or self.settings.openai_api_key)
-        analysis = run_meeting_analysis(
+        analysis = await run_meeting_analysis(
             {
                 "summary": summary,
                 "transcript": transcript,
