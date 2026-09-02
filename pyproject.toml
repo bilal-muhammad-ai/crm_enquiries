@@ -1,0 +1,51 @@
+[project]
+name = "crm_enquiries"
+version = "0.1.0"
+description = "Glancy Fawcett CRM Enquiry System — FastAPI + CrewAI"
+authors = [{ name = "Glancy Fawcett", email = "sales@glancyfawcett.com" }]
+requires-python = ">=3.10,<3.14"
+dependencies = [
+    "crewai[tools,litellm]>=1.15.17,<2.0.0",
+    "fastapi>=0.115.0",
+    "uvicorn[standard]>=0.32.0",
+    "sqlalchemy>=2.0.0",
+    "alembic>=1.14.0",
+    "httpx>=0.28.0",
+    "pydantic>=2.0.0",
+    "pydantic-settings>=2.0.0",
+    "python-dotenv>=1.0.0",
+    "pyyaml>=6.0.0",
+    "chromadb>=0.5.0",
+    "ollama>=0.4.0",
+    "python-jose[cryptography]>=3.3.0",
+    "aiosqlite>=0.20.0",
+    "asyncpg>=0.30.0",
+    "greenlet>=3.0.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0.0",
+    "pytest-asyncio>=0.24.0",
+    "httpx>=0.28.0",
+    "debugpy>=1.8.0",
+]
+
+[project.scripts]
+crm-enquiries = "crm_enquiries.main:run"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/crm_enquiries"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
+pythonpath = ["src"]
+
+[tool.crewai]
+type = "flow"
+project_id = "crm-enquiries-gf"
