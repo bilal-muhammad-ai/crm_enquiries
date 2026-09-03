@@ -57,6 +57,13 @@ class Settings(BaseSettings):
     embedding_model: str = "nomic-embed-text"
     knowledge_dir: str = str(ROOT_DIR / "knowledge" / "glancy_faq")
 
+    # Voice widget
+    voice_stt_model: str = "whisper-large-v3"
+    voice_tts_voice: str = "en-GB-SoniaNeural"
+    voice_max_reply_chars: int = 500
+    voice_session_ttl_seconds: int = 1800
+    voice_rate_limit_per_minute: int = 20
+
     # App
     api_key: str = "dev-api-key-change-me"
     jwt_secret: str = "dev-jwt-secret-change-me"

@@ -8,6 +8,7 @@ from pathlib import Path
 import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 
 # Ensure CrewAI storage is within project data directory
 _data_dir = Path(__file__).resolve().parents[2] / "data" / "crewai"
@@ -19,6 +20,7 @@ from crm_enquiries.crews import compat  # noqa: F401 — Groq/LiteLLM compatibil
 
 from crm_enquiries.api.approval import router as approval_router
 from crm_enquiries.api.enquiries import router as enquiries_router
+from crm_enquiries.api.voice import router as voice_router
 from crm_enquiries.api.webhooks import router as webhooks_router
 from crm_enquiries.config import get_settings
 from crm_enquiries.database import init_db
@@ -55,6 +57,10 @@ app.add_middleware(
 app.include_router(enquiries_router)
 app.include_router(approval_router)
 app.include_router(webhooks_router)
+app.include_router(voice_router)
+
+_static_dir = Path(__file__).resolve().parent / "static"
+app.mount("/static", StaticFiles(directory=str(_static_dir)), name="static")
 
 
 @app.get("/health")

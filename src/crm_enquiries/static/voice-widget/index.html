@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Glancy Fawcett Voice FAQ</title>
+  <link rel="stylesheet" href="/static/voice-widget/widget.css" />
+</head>
+<body>
+  <div id="voice-app" class="voice-app">
+    <header class="voice-header">
+      <h1>Glancy Fawcett Voice FAQ</h1>
+      <p>Ask questions about our services, projects, and process.</p>
+    </header>
+
+    <div id="voice-panel" class="voice-panel">
+      <div id="voice-messages" class="voice-messages" aria-live="polite"></div>
+
+      <div class="voice-controls">
+        <button id="mic-btn" class="mic-btn" type="button" aria-label="Hold to speak">
+          <span class="mic-icon">🎤</span>
+          <span id="mic-label">Hold to speak</span>
+        </button>
+
+        <form id="text-form" class="text-form">
+          <input
+            id="text-input"
+            type="text"
+            placeholder="Or type your question..."
+            autocomplete="off"
+          />
+          <button type="submit">Send</button>
+        </form>
+      </div>
+
+      <p id="status" class="status">Connecting...</p>
+    </div>
+  </div>
+
+  <script src="/static/voice-widget/widget.js"></script>
+</body>
+</html>
