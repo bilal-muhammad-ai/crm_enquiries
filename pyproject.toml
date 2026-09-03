@@ -21,6 +21,7 @@ dependencies = [
     "aiosqlite>=0.20.0",
     "asyncpg>=0.30.0",
     "greenlet>=3.0.0",
+    "edge-tts>=6.1.0",
 ]
 
 [project.optional-dependencies]
